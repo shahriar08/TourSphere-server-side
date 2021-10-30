@@ -4,7 +4,7 @@ require('dotenv').config();
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
-
+const ObjectId = require("mongodb").ObjectId;
 
 app.use(cors());
 app.use(express.json());
@@ -26,6 +26,18 @@ async function run() {
             const events = await cursor.toArray();
             res.send(events);
         })
+
+        app.post('/addEvent',(req,res) =>{
+             eventCollection.insertOne(req.body).then((result) =>{
+                 res.send(result.insertedId);
+             })
+        })
+
+        // deleteproduct
+        app.delete('/deleteEvent/:id',async (req,res)=>{
+            const result = await eventCollection.deleteOne({_id:ObjectId(req.params.id)})
+            res.send(result);
+        });
     }
     finally{
 
