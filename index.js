@@ -27,17 +27,32 @@ async function run() {
             res.send(events);
         })
 
+        // addEvent
         app.post('/addEvent',(req,res) =>{
-             eventCollection.insertOne(req.body).then((result) =>{
-                 res.send(result.insertedId);
+            const newEvent = req.body;
+             eventCollection.insertOne(newEvent).then((result) =>{
+                 res.send(result.insertedId>0);
              })
         })
 
         // deleteproduct
         app.delete('/deleteEvent/:id',async (req,res)=>{
-            const result = await eventCollection.deleteOne({_id:ObjectId(req.params.id)})
-            res.send(result);
+            eventCollection.deleteOne({ _id: ObjectID(req.params.id) })
+            .then(result => {
+                res.send(result.deletedCount > 0);
+            })
         });
+
+        // update 
+        app.patch('/update/:id', (req, res) => {
+            eventCollection.updateOne({ _id: ObjectID(req.params.id) },
+                {
+                    $set: { eventName: req.body.eventName, eventPrice: req.body.eventPrice, eventDuration: req.body.eventDuration, image: req.body.image }
+                })
+                .then(result => {
+                    res.send(result.modifiedCount > 0)
+                })
+        })
     }
     finally{
 
