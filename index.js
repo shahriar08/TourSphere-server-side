@@ -15,33 +15,35 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 console.log(uri);
 
 async function run() {
-    try{
+    try {
         await client.connect();
         const database = client.db('tour_sphere');
         const eventCollection = database.collection('events');
         const bookCollection = database.collection('booking');
 
         //Get event api
-        app.get('/events',async(req,res)=>{
+        app.get('/events', async (req, res) => {
             const cursor = eventCollection.find({});
             const events = await cursor.toArray();
             res.send(events);
         })
 
         // addEvent
-        app.post('/addEvent',(req,res) =>{
+        app.post('/addEvent', (req, res) => {
             const newEvent = req.body;
-             eventCollection.insertOne(newEvent).then((result) =>{
-                 res.send(result.insertedId>0);
-             })
+            eventCollection.insertOne(newEvent).then((result) => {
+                res.send(result.insertedId > 0);
+            })
         })
 
         // deleteproduct
-        app.delete('/deleteEvent/:id',async (req,res)=>{
-            eventCollection.deleteOne({ _id: ObjectID(req.params.id) })
-            .then(result => {
-                res.send(result.deletedCount > 0);
+        app.delete('/deleteEvent/:id', async (req, res) => {
+            const result = await eventCollection.deleteOne({
+                _id: ObjectID(req.params.id),
+
             })
+            res.send(result);
+
         });
 
         // update 
@@ -78,14 +80,14 @@ async function run() {
                 })
         })
     }
-    finally{
+    finally {
 
     }
 }
 run().catch(console.dir);
-app.get('/',(req, res)=>{
+app.get('/', (req, res) => {
     res.send('Server Running');
 });
-app.listen(port, () =>{
-    console.log('server running at port',port)
+app.listen(port, () => {
+    console.log('server running at port', port)
 }) 
