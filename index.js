@@ -19,6 +19,7 @@ async function run() {
         await client.connect();
         const database = client.db('tour_sphere');
         const eventCollection = database.collection('events');
+        const bookCollection = database.collection('booking');
 
         //Get event api
         app.get('/events',async(req,res)=>{
@@ -51,6 +52,22 @@ async function run() {
                 })
                 .then(result => {
                     res.send(result.modifiedCount > 0)
+                })
+        })
+
+        app.post('/addOrder', (req, res) => {
+            const newOrder = req.body;
+            console.log('adding new order: ', newOrder)
+            bookCollection.insertOne(newOrder)
+                .then(result => {
+                    console.log('inserted count', result.insertedCount);
+                    res.send(result.insertedCount > 0)
+                })
+        })
+        app.get('/bookings', (req, res) => {
+            bookCollection.find({ email: req.query.email })
+                .toArray((err, items) => {
+                    res.send(items)
                 })
         })
     }
