@@ -70,6 +70,13 @@ async function run() {
                     res.send(items)
                 })
         })
+
+        app.get('/orders', (req, res) => {
+            bookCollection.find()
+                .toArray((err, items) => {
+                    res.send(items)
+                })
+        })
     }
     finally{
 
